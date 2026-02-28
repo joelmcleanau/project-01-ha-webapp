@@ -16,3 +16,8 @@ Develop practical Solutions Architect reasoning by building real infrastructure 
 ---
 
 This project documents the design, deployment and reasoning behind a production-style highly available AWS architecture.
+
+## Development Environment
+- Device: MacBook Air
+- Git workflow enabled
+- AWS CLI configured (ap-southeast-2)
