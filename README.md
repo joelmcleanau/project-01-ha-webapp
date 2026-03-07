@@ -47,3 +47,21 @@ This project documents the design, deployment and reasoning behind a production-
 ### NAT Strategy
 For learning, start with a single NAT Gateway (cost efficiency).  
 In production, one NAT Gateway per AZ is recommended to avoid cross-AZ dependency.
+
+## Network Architecture
+
+VPC: 10.0.0.0/16
+
+AZ1
+- Public-AZ1 10.0.1.0/24
+- Private-AZ1 10.0.11.0/24
+
+AZ2
+- Public-AZ2 10.0.2.0/24
+- Private-AZ2 10.0.12.0/24
+
+Public route table:
+0.0.0.0/0 → Internet Gateway
+
+Private route table:
+Local VPC routing only
