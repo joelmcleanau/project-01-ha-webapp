@@ -65,3 +65,34 @@ Public route table:
 
 Private route table:
 Local VPC routing only
+
+## Network Architecture Diagram
+
+```mermaid
+flowchart TB
+
+    Internet((Internet))
+
+    IGW[Internet Gateway]
+
+    subgraph VPC["Joel-HA-WebApp-VPC 10.0.0.0/16"]
+
+        subgraph AZ1["Availability Zone 1"]
+            Pub1["Public-AZ1\n10.0.1.0/24"]
+            Priv1["Private-AZ1\n10.0.11.0/24"]
+        end
+
+        subgraph AZ2["Availability Zone 2"]
+            Pub2["Public-AZ2\n10.0.2.0/24"]
+            Priv2["Private-AZ2\n10.0.12.0/24"]
+        end
+
+    end
+
+    Internet --> IGW
+    IGW --> Pub1
+    IGW --> Pub2
+
+    Pub1 --> Priv1
+    Pub2 --> Priv2
+```
