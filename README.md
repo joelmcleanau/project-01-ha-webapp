@@ -45,8 +45,22 @@ This project documents the design, deployment and reasoning behind a production-
 - Private subnets: `0.0.0.0/0 → NAT Gateway`
 
 ### NAT Strategy
-For learning, start with a single NAT Gateway when required.  
-In production, one NAT Gateway per AZ is recommended to avoid cross-AZ dependency.
+
+For learning purposes, this lab currently **does not deploy a NAT Gateway**.
+
+NAT Gateways incur a constant hourly charge, so they were intentionally excluded during the early stages of this project to keep lab costs minimal while the core networking and load balancing architecture was developed.
+
+At this stage, all compute resources remain in public subnets to allow direct internet access for package installation and updates.
+
+In a production architecture, application servers would normally be placed in **private subnets** with outbound internet access provided through a **NAT Gateway**.
+
+Best practice in production environments is to deploy **one NAT Gateway per Availability Zone** to avoid cross-AZ dependencies and improve resilience.
+
+A NAT Gateway will be introduced later in this project when the architecture evolves to include:
+
+- private application servers
+- Auto Scaling Groups
+- controlled outbound internet access
 
 ## Network Architecture
 
