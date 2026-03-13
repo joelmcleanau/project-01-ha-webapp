@@ -125,3 +125,147 @@ This confirmed that:
 - HTTP traffic is allowed through the security group
 - Nginx is running correctly on the EC2 instance
 - The instance is reachable via the internet gateway
+
+---
+
+## Application Load Balancer Deployment
+
+To move towards a production-style architecture, an **Application Load Balancer (ALB)** was introduced in front of the web server.
+
+Rather than allowing users to connect directly to the EC2 instance, traffic now flows through the load balancer first. This approach allows the architecture to scale to multiple backend instances and improves availability.
+
+The ALB distributes incoming requests to registered targets within a target group.
+
+### Traffic Flow
+
+```
+Internet → Application Load Balancer → Target Group → EC2 Web Server → Nginx → Web Page
+```
+
+---
+
+## Target Group Configuration
+
+A target group was created to register backend instances that will receive traffic from the load balancer.
+
+| Setting | Value |
+|--------|------|
+| Target Group Name | `joel-webapp-tg` |
+| Target Type | Instance |
+| Protocol | HTTP |
+| Port | 80 |
+| VPC | `Joel-HA-WebApp-VPC` |
+
+The EC2 instance **Joel-WebApp-VPC-Public-Server** was registered as the first target.
+
+Health checks confirmed the instance was **healthy**, indicating that Nginx was responding correctly on port 80.
+
+---
+
+## Application Load Balancer Configuration
+
+An internet-facing Application Load Balancer was deployed with the following configuration:
+
+| Setting | Value |
+|--------|------|
+| Name | `joel-webapp-alb` |
+| Scheme | Internet-facing |
+| IP Address Type | IPv4 |
+| VPC | `Joel-HA-WebApp-VPC` |
+| Subnets | Public-AZ1, Public-AZ2 |
+
+Placing the load balancer in **two public subnets across different Availability Zones** ensures that the load balancer itself remains highly available.
+
+---
+
+## Security Group Architecture
+
+Two separate security groups were used to properly control traffic flow.
+
+### ALB Security Group (`joel-alb-sg`)
+
+| Type | Port | Source |
+|-----|------|------|
+| HTTP | 80 | 0.0.0.0/0 |
+
+This allows internet traffic to reach the load balancer.
+
+### EC2 Web Server Security Group (`joel-webapp-public-sg`)
+
+| Type | Port | Source |
+|-----|------|------|
+| SSH | 22 | Administrator IP |
+| HTTP | 80 | ALB Security Group |
+
+This configuration ensures that web traffic reaches the EC2 instance **only through the load balancer**, rather than directly from the internet.
+
+---
+
+## Listener Configuration
+
+The ALB listener was configured as:
+
+| Protocol | Port | Action |
+|---------|------|------|
+| HTTP | 80 | Forward to `joel-webapp-tg` |
+
+Incoming HTTP requests are forwarded to the target group which then routes traffic to the registered EC2 instance.
+
+---
+
+## Validation
+
+The architecture was tested by accessing the **ALB DNS endpoint** in a browser:
+
+```
+http://joel-webapp-alb-130875726.ap-southeast-2.elb.amazonaws.com
+```
+
+The request successfully returned the custom web page:
+
+```
+Joel McLean Cloud Lab
+High Availability Web App Running on AWS
+```
+
+This confirmed the full traffic path was operating correctly:
+
+```
+Internet → ALB → Target Group → EC2 → Nginx → Web Page
+```
+
+---
+
+## Key Learning Points
+
+Building this stage of the architecture highlighted several important AWS concepts:
+
+- Application Load Balancers must be placed in **public subnets**
+- Each Availability Zone requires its own subnet
+- Subnets are only considered public if their route table includes a route to the **Internet Gateway**
+- Security groups should enforce proper traffic flow:
+  
+```
+Internet → ALB → EC2
+```
+
+- When troubleshooting load balancer issues it is important to verify:
+  - target group health
+  - security group rules
+  - subnet routing
+  - whether the application is actually running on the instance
+
+---
+
+## Next Stage
+
+The current design routes traffic to a **single EC2 instance**.
+
+The next phase of the architecture will introduce:
+
+- **Multiple EC2 instances**
+- **Auto Scaling Groups**
+- **Private subnet application servers**
+- **NAT Gateway for outbound internet access**
+
+This will allow the architecture to achieve true **high availability and automatic scaling**.
