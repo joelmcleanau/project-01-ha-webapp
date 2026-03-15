@@ -339,16 +339,25 @@ This confirmed that the architecture is **self-healing** and capable of automati
 
 With Auto Scaling in place, the application now follows this architecture:
 
-```
-Internet
-   ↓
-Application Load Balancer
-   ↓
-Target Group
-   ↓
-Auto Scaling Group
-   ↓
-Multiple EC2 Instances (Nginx)
+```mermaid
+flowchart TD
+
+    Users[Internet Users]
+
+    ALB[Application Load Balancer]
+
+    TG[Target Group]
+
+    ASG[Auto Scaling Group]
+
+    EC2A[EC2 Instance<br/>AZ 2a]
+    EC2B[EC2 Instance<br/>AZ 2b]
+
+    Users --> ALB
+    ALB --> TG
+    TG --> ASG
+    ASG --> EC2A
+    ASG --> EC2B
 ```
 
 This architecture provides:
