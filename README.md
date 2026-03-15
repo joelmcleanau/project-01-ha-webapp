@@ -283,3 +283,86 @@ The next phase of the architecture will introduce:
 - **NAT Gateway for outbound internet access**
 
 This will allow the architecture to achieve true **high availability and automatic scaling**.
+
+---
+
+## Auto Scaling Implementation
+
+To achieve true high availability, the architecture was extended with an **EC2 Auto Scaling Group (ASG)**.
+
+Instead of relying on a single EC2 instance, the application now runs on multiple instances managed automatically by AWS.
+
+A **Launch Template** defines the instance configuration, including:
+
+- instance type
+- AMI
+- security groups
+- user data script that installs and starts Nginx
+
+When new instances launch, they automatically configure themselves as web servers.
+
+### Auto Scaling Configuration
+
+| Setting | Value |
+|-------|------|
+| Auto Scaling Group | `joel-webapp-asg` |
+| Launch Template | `joel-webapp-template` |
+| Desired Capacity | 2 |
+| Minimum Capacity | 2 |
+| Maximum Capacity | 2 |
+| Target Group | `joel-webapp-tg` |
+
+The Auto Scaling Group spans **multiple Availability Zones**, ensuring that if an instance fails in one zone, a replacement instance can be launched automatically.
+
+---
+
+## Self-Healing Infrastructure Test
+
+To verify that the architecture was functioning correctly, an EC2 instance was manually terminated.
+
+The following behaviour was observed:
+
+1. One EC2 instance was terminated.
+2. The Auto Scaling Group detected that the number of running instances dropped below the desired capacity.
+3. AWS automatically launched a replacement instance.
+4. The new instance registered with the target group.
+5. Health checks passed and traffic continued flowing through the load balancer.
+
+During this process the web application remained accessible through the load balancer.
+
+This confirmed that the architecture is **self-healing** and capable of automatically recovering from instance failures.
+
+---
+
+## Updated Traffic Flow
+
+With Auto Scaling in place, the application now follows this architecture:
+Internet
+↓
+Application Load Balancer
+↓
+Target Group
+↓
+Auto Scaling Group
+↓
+Multiple EC2 Instances (Nginx)
+
+This architecture provides:
+
+- improved availability
+- automatic instance replacement
+- the foundation for horizontal scaling
+
+---
+
+## Future Improvements
+
+Several improvements could further enhance the architecture:
+
+- Enable **HTTPS** using AWS Certificate Manager
+- Implement **CloudWatch scaling policies**
+- Move application servers to **private subnets**
+- Introduce **NAT Gateway** or **VPC Endpoints** for controlled outbound access
+- Deploy infrastructure using **Infrastructure as Code (Terraform or CloudFormation)**
+
+These enhancements would bring the architecture closer to a production-grade AWS environment.
