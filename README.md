@@ -1,4 +1,5 @@
 ## Project 01 – Highly Available Web Application
+This project demonstrates the design and deployment of a highly available web application architecture on AWS using load balancing and auto scaling.
 
 ## Objective
 Design and deploy a highly available web application architecture in AWS using:
@@ -337,21 +338,25 @@ This confirmed that the architecture is **self-healing** and capable of automati
 ## Updated Traffic Flow
 
 With Auto Scaling in place, the application now follows this architecture:
+
+```
 Internet
-↓
+   ↓
 Application Load Balancer
-↓
+   ↓
 Target Group
-↓
+   ↓
 Auto Scaling Group
-↓
+   ↓
 Multiple EC2 Instances (Nginx)
+```
 
 This architecture provides:
 
-- improved availability
-- automatic instance replacement
-- the foundation for horizontal scaling
+* improved availability
+* automatic instance replacement
+* the foundation for horizontal scaling
+
 
 ---
 
