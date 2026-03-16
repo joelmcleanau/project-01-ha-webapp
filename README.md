@@ -209,10 +209,9 @@ This allows internet traffic to reach the load balancer.
 
 | Type | Port | Source |
 |-----|------|------|
-| SSH | 22 | Administrator IP |
 | HTTP | 80 | ALB Security Group |
 
-This configuration ensures that web traffic reaches the EC2 instance **only through the load balancer**, rather than directly from the internet.
+Administrative access is handled through AWS Systems Manager (SSM), allowing secure instance management without exposing SSH to the internet.
 
 ---
 
@@ -274,16 +273,9 @@ Internet → ALB → EC2
 
 ## Next Stage
 
-The current design routes traffic to a **single EC2 instance**.
+The architecture now uses an Application Load Balancer and an Auto Scaling Group across two Availability Zones.
 
-The next phase of the architecture will introduce:
-
-- **Multiple EC2 instances**
-- **Auto Scaling Groups**
-- **Private subnet application servers**
-- **NAT Gateway for outbound internet access**
-
-This will allow the architecture to achieve true **high availability and automatic scaling**.
+The next phase will focus on moving application instances into private subnets and introducing controlled outbound access through a NAT Gateway or VPC endpoints. This will bring the design closer to a production-grade AWS architecture.
 
 ---
 
@@ -368,6 +360,20 @@ This architecture provides:
 
 
 ---
+
+## Current State vs Production Target
+
+Current lab state:
+- ALB in public subnets
+- EC2 instances in public subnets
+- Auto Scaling across two Availability Zones
+- SSM used for management
+
+Production target:
+- ALB in public subnets
+- EC2 instances in private subnets
+- NAT Gateway or VPC endpoints for controlled outbound access
+- HTTPS enabled with ACM
 
 ## Future Improvements
 
