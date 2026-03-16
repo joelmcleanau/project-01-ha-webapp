@@ -361,22 +361,41 @@ This architecture provides:
 
 ---
 
-## Current State vs Production Target
 
-Current lab state:
-- ALB in public subnets
-- EC2 instances in public subnets
-- Auto Scaling across two Availability Zones
-- SSM used for management
 
-Production target:
-- ALB in public subnets
-- EC2 instances in private subnets
-- NAT Gateway or VPC endpoints for controlled outbound access
-- HTTPS enabled with ACM
+## Current Architecture State
+
+The current lab environment demonstrates a functional highly available web application architecture.
+
+Key characteristics of the deployed environment:
+
+- Application Load Balancer deployed across two public subnets
+- EC2 Auto Scaling Group spanning two Availability Zones
+- Nginx web servers automatically configured via Launch Template
+- Target group health checks ensuring only healthy instances receive traffic
+- AWS Systems Manager (SSM) used for instance management without exposing SSH
+- Self-healing infrastructure verified through instance termination testing
+
+This architecture demonstrates the core AWS high availability pattern used in many production environments:
+
+Internet → Load Balancer → Auto Scaling Group → Application Instances
+
+## Production Architecture Target
+
+While the current lab prioritises learning and cost control, a production implementation would introduce several improvements.
+
+Typical production enhancements include:
+
+- Moving application servers into **private subnets**
+- Introducing a **NAT Gateway or VPC Endpoints** for controlled outbound access
+- Enabling **HTTPS with AWS Certificate Manager (ACM)**
+- Implementing **CloudWatch metrics and Auto Scaling policies**
+- Adding **WAF protection** in front of the load balancer
+- Deploying infrastructure using **Infrastructure as Code (Terraform or CloudFormation)**
+
+These improvements increase security, observability, and operational reliability while maintaining the same core architecture pattern.
 
 ## Future Improvements
-
 Several improvements could further enhance the architecture:
 
 - Enable **HTTPS** using AWS Certificate Manager
@@ -386,3 +405,12 @@ Several improvements could further enhance the architecture:
 - Deploy infrastructure using **Infrastructure as Code (Terraform or CloudFormation)**
 
 These enhancements would bring the architecture closer to a production-grade AWS environment.
+
+---
+
+## Author
+
+Joel McLean  
+AWS Cloud Architecture Lab Series
+
+This repository documents hands-on AWS architecture projects built while studying for the AWS Solutions Architect Associate certification.
