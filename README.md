@@ -1,6 +1,33 @@
 ## Project 01 – Highly Available Web Application
 This project demonstrates the design and deployment of a highly available web application architecture on AWS using load balancing and auto scaling.
 
+## Architecture Overview
+
+This project demonstrates a highly available AWS web application architecture using an Application Load Balancer and EC2 Auto Scaling across multiple Availability Zones.
+
+```mermaid
+flowchart TD
+
+    Users[Internet Users]
+    ALB[Application Load Balancer]
+    TG[Target Group]
+    ASG[Auto Scaling Group]
+
+    subgraph AZ1[Availability Zone 1]
+        EC2A[EC2 Instance AZ1]
+    end
+
+    subgraph AZ2[Availability Zone 2]
+        EC2B[EC2 Instance AZ2]
+    end
+
+    Users --> ALB
+    ALB --> TG
+    TG --> ASG
+    ASG --> EC2A
+    ASG --> EC2B
+```
+
 ## Objective
 Design and deploy a highly available web application architecture in AWS using:
 
